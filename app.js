@@ -62,7 +62,7 @@ app.post('/sendemail', (req, res) => {
                         return res.status(500).send("Email sent but failed to delete file.");
                     } else {
                         console.log("Image deleted from server!");
-                        return res.redirect('https://filespire.netlify.app/');
+                        return res.redirect('https://filespire.pages.dev/');
                     }
                 });
             }
