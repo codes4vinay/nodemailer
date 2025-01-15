@@ -8,7 +8,7 @@ const axios = require("axios");
 const app = express();
 
 const url = `https://mailer-w4te.onrender.com/`;
-const interval = 30000;
+const interval = 420000;
 
 function reloadWebsite() {
   axios
