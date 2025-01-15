@@ -4,16 +4,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>filespire-Mailer</title>
+    <title>Filespire Mailer</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
         integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <style>
+        body {
+            margin-top: 60px;
+        }
+
+        header {
+            background-color: #007BFF;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        footer {
+            background-color: #f8f9fa;
+            color: #6c757d;
+            text-align: center;
+            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+    </style>
 </head>
 
 <body>
+    <header>
+        <h1>Filespire - Easy File Sharing</h1>
+    </header>
+
     <div class="container">
         <br>
-        <h1 class="text-center">Filespire Mailer</h1>
+        <h2 class="text-center">Filespire Mailer</h2>
         <br>
         <form autocomplete="on" action="/sendemail" method="POST" enctype="multipart/form-data">
             <div class="form-group">
@@ -21,15 +53,15 @@
                     id="to">
             </div>
             <div class="form-group">
-                <input class="form-control" type="text" name="subject" required placeholder="Subject: " id="subject">
+                <input class="form-control" type="text" name="subject" placeholder="Subject: " id="subject">
             </div>
             <div class="form-group">
-                <textarea class="form-control" cols="30" rows="10" name="body" required placeholder="Body: "
+                <textarea class="form-control" cols="30" rows="10" name="body" placeholder="Body: "
                     id="body"></textarea>
             </div>
             <div class="form-group">
-                <label for="attachment">Attach File:</label>
-                <input class="form-control" type="file" name="image">
+                <label for="attachment">Attach File(s):</label>
+                <input class="form-control" type="file" name="images" multiple>
             </div>
             <div class="form-group">
                 <button class="btn btn-block btn-success">Send</button>
@@ -37,9 +69,13 @@
         </form>
     </div>
 
+    <footer>
+        <p>© 2025 Filespire. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous"></script>
 </body>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
-    integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
-    crossorigin="anonymous"></script>
 
 </html>
