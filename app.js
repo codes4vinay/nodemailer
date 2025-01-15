@@ -3,7 +3,7 @@ const multer = require('multer');
 const fs = require('fs');
 const bodyParser = require('body-parser');
 const express = require('express');
-const axios from "axios";
+const axios = require("axios");
 
 const app = express();
 
