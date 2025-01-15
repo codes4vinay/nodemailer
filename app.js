@@ -70,7 +70,7 @@ app.post('/sendemail', (req, res) => {
                     });
                 });
 
-                return res.redirect('http://filerspire.pages.dev');
+                return res.redirect('http://filespire.pages.dev');
             }
         });
     });
