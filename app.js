@@ -18,7 +18,8 @@ const Storage = multer.diskStorage({
     }
 });
 
-const upload = multer({ storage: Storage }).single('image');
+// Use `array` instead of `single` for multiple files
+const upload = multer({ storage: Storage }).array('images', 10); // Limit to 10 files at a time
 
 app.use(express.static('public'));
 
@@ -29,10 +30,11 @@ app.get('/', (req, res) => {
 app.post('/sendemail', (req, res) => {
     upload(req, res, function (err) {
         if (err) {
-            return res.end("Error uploading file.");
+            return res.end("Error uploading files.");
         }
+
         const { to, subject, body } = req.body;
-        const path = req.file.path;
+        const attachments = req.files.map(file => ({ path: file.path }));
 
         const transporter = nodemailer.createTransport({
             service: 'gmail',
@@ -47,7 +49,7 @@ app.post('/sendemail', (req, res) => {
             to: to,
             subject: subject,
             text: body,
-            attachments: [{ path: path }]
+            attachments: attachments
         };
 
         transporter.sendMail(mailOptions, function (err, info) {
@@ -56,15 +58,19 @@ app.post('/sendemail', (req, res) => {
                 return res.status(500).send("Failed to send email.");
             } else {
                 console.log("Email Sent: " + info.response);
-                fs.unlink(path, function (err) {
-                    if (err) {
-                        console.log("Failed to delete file:", err);
-                        return res.status(500).send("Email sent but failed to delete file.");
-                    } else {
-                        console.log("Image deleted from server!");
-                        return res.redirect('https://filespire.pages.dev/');
-                    }
+
+                // Delete all uploaded files
+                attachments.forEach(attachment => {
+                    fs.unlink(attachment.path, function (err) {
+                        if (err) {
+                            console.log("Failed to delete file:", attachment.path);
+                        } else {
+                            console.log(`Deleted file: ${attachment.path}`);
+                        }
+                    });
                 });
+
+                return res.redirect('http://filerspire.pages.dev');
             }
         });
     });
