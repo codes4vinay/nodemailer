@@ -7,7 +7,7 @@ const axios = require("axios");
 
 const app = express();
 
-const url = `https://mailer-w4te.onrender.com/`;
+const url = `https://app.filetranfer.tech/`;
 const interval = 800000;
 
 function reloadWebsite() {
