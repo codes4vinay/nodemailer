@@ -87,7 +87,7 @@ app.post('/sendemail', (req, res) => {
                     });
                 });
 
-                return res.redirect('http://filetranfer.tech');
+                return res.redirect('/result.html');
             }
         });
     });
