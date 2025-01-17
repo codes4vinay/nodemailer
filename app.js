@@ -87,7 +87,7 @@ app.post('/sendemail', (req, res) => {
                     });
                 });
 
-                return res.redirect('/result.html');
+                return res.redirect('/result');
             }
         });
     });
