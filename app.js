@@ -8,7 +8,7 @@ const axios = require("axios");
 const app = express();
 
 const url = `https://app.filetranfer.tech/`;
-const interval = 900000;
+const interval = 880000;
 
 function reloadWebsite() {
   axios
