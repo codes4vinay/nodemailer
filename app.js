@@ -3,22 +3,22 @@ const multer = require('multer');
 const fs = require('fs');
 const bodyParser = require('body-parser');
 const express = require('express');
-import axios from "axios";
+const axios = require("axios");
 
 const app = express();
 
-const url = `https://mailer-w4te.onrender.com/`;
-const interval = 30000;
+const url = `https://app.filetranfer.tech/`;
+const interval = 880000;
 
 function reloadWebsite() {
-  axios
-    .get(url)
-    .then((response) => {
-      console.log("website reloded");
-    })
-    .catch((error) => {
-      console.error(`Error : ${error.message}`);
-    });
+    axios
+        .get(url)
+        .then((response) => {
+            console.log("website reloded");
+        })
+        .catch((error) => {
+            console.error(`Error : ${error.message}`);
+        });
 }
 
 setInterval(reloadWebsite, interval);
@@ -87,7 +87,7 @@ app.post('/sendemail', (req, res) => {
                     });
                 });
 
-                return res.redirect('http://filespire.pages.dev');
+                return res.redirect('/result.html');
             }
         });
     });

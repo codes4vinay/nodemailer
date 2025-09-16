@@ -2,80 +2,224 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Filespire Mailer</title>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
-        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!-- Tailwind CDN (keeps your existing Tailwind utility classes) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Custom styles for borders / focus / container -->
     <style>
-        body {
-            margin-top: 60px;
+        :root {
+            --border-default: rgba(255, 255, 255, 0.15);
+            --input-border: rgba(255, 255, 255, 0.18);
+            --accent: #a855f7;
         }
 
-        header {
-            background-color: #007BFF;
+        /* Form card (container) */
+        .form-card {
+            background: rgba(0, 0, 0, 0.45);
+            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px);
+            padding: 2rem;
+            border-radius: 1rem;
+            width: 100%;
+            max-width: 720px;
+            border: 2px solid var(--border-default);
+            /* default border */
+            transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.12s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+        }
+
+        .form-card:hover {
+            border-color: var(--accent);
+            /* highlight on hover */
+            box-shadow: 0 14px 60px rgba(168, 85, 247, 0.08);
+            transform: translateY(-3px);
+        }
+
+        /* Inputs & textarea */
+        .form-control {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            border-radius: 0.6rem;
+            background: rgba(0, 0, 0, 0.34);
+            color: #e9d8ff;
+            border: 2px solid var(--input-border);
+            /* default input border */
+            transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+            font-size: 1rem;
+        }
+
+        .form-control::placeholder {
+            color: rgba(200, 170, 255, 0.55);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent);
+            /* focus border */
+            background: rgba(0, 0, 0, 0.46);
+            box-shadow: 0 6px 28px rgba(168, 85, 247, 0.06);
+        }
+
+        /* file input default border + styled button */
+        input[type="file"].form-control {
+            padding: 0.6rem 0.85rem;
+            display: block;
+        }
+
+        /* file selector button styling (modern browsers) */
+        input[type="file"].form-control::file-selector-button {
+            background: linear-gradient(90deg, #7c3aed, #9333ea);
             color: white;
-            padding: 15px;
-            text-align: center;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
+            border: none;
+            padding: 0.5rem 0.9rem;
+            margin-right: 0.7rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
         }
 
+        input[type="file"].form-control::file-selector-button:hover {
+            filter: brightness(1.05);
+        }
+
+        /* Primary button */
+        .btn-primary {
+            width: 100%;
+            padding: 0.85rem;
+            border-radius: 0.8rem;
+            border: none;
+            font-weight: 600;
+            font-size: 1rem;
+            background: linear-gradient(90deg, #7c3aed, #9333ea);
+            color: #fff;
+            transition: transform 0.08s ease, box-shadow 0.15s ease, filter 0.12s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 35px rgba(147, 51, 234, 0.18);
+        }
+
+        /* keep footer visible and not overlapped */
         footer {
-            background-color: #f8f9fa;
-            color: #6c757d;
-            text-align: center;
-            padding: 10px 0;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            z-index: 40;
+            background: rgba(0, 0, 0, 0.45);
+            -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(6px);
+        }
+
+        /* Small responsiveness tweaks */
+        @media (max-width:640px) {
+            .form-card {
+                padding: 1.25rem;
+                border-radius: 0.8rem;
+            }
+
+            .form-control {
+                font-size: 0.95rem;
+                padding: 0.7rem 0.85rem;
+            }
+
+            .btn-primary {
+                padding: 0.75rem;
+            }
         }
     </style>
 </head>
 
-<body>
-    <header>
-        <h1>Filespire - Easy File Sharing</h1>
-    </header>
-
-    <div class="container">
-        <br>
-        <h2 class="text-center">Filespire Mailer</h2>
-        <br>
-        <form autocomplete="on" action="/sendemail" method="POST" enctype="multipart/form-data">
-            <div class="form-group">
-                <input class="form-control" type="email" name="to" required placeholder="Enter the recipient email: "
-                    id="to">
-            </div>
-            <div class="form-group">
-                <input class="form-control" type="text" name="subject" placeholder="Subject: " id="subject">
-            </div>
-            <div class="form-group">
-                <textarea class="form-control" cols="30" rows="10" name="body" placeholder="Body: "
-                    id="body"></textarea>
-            </div>
-            <div class="form-group">
-                <label for="attachment">Attach File(s):</label>
-                <input class="form-control" type="file" name="images" multiple>
-            </div>
-            <div class="form-group">
-                <button class="btn btn-block btn-success">Send</button>
-            </div>
-        </form>
+<body class="relative min-h-screen flex flex-col text-purple-200">
+    <!-- Background gradient -->
+    <div
+        class="absolute inset-0 -z-10 w-full h-full [background:radial-gradient(125%_125%_at_50%_10%,#000_40%,#63e_100%)]">
     </div>
 
-    <footer>
+    <!-- Navbar (all links redirect to filetranfer.tech/links as requested) -->
+    <nav class="w-full bg-black/50 backdrop-blur-md text-purple-200 fixed top-0 left-0 z-50 shadow-md">
+        <div class="mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <!-- Logo -->
+                <div class="text-2xl font-bold text-stone-300">
+                    <a href="https://filetranfer.tech/links">Filespire</a>
+                </div>
+
+                <!-- Desktop Menu -->
+                <ul class="hidden md:flex gap-6 items-center font-medium">
+                    <li><a href="https://filetranfer.tech/" class="hover:text-purple-400 transition">Home</a></li>
+                    <li><a href="https://filetranfer.tech/features" class="hover:text-purple-400 transition">Features</a>
+                    </li>
+                    <li><a href="https://filetranfer.tech/about" class="hover:text-purple-400 transition">About</a></li>
+                    <li><a href="https://filetranfer.tech/contact" class="hover:text-purple-400 transition">Contact</a>
+                    </li>
+                    <li><a href="https://filetranfer.tech/short" class="hover:text-purple-400 transition">Shorten
+                            Link</a></li>
+                    <li><a href="https://filetranfer.tech/clipboard/send"
+                            class="hover:text-purple-400 transition">Clipboard
+                            Send</a></li>
+                    <li><a href="https://filetranfer.tech/clipboard/receive"
+                            class="hover:text-purple-400 transition">Clipboard
+                            Receive</a></li>
+                </ul>
+
+                <!-- Desktop Buttons -->
+                <div class="hidden md:flex gap-4">
+                    <a href="https://filetranfer.tech/login">
+                        <button
+                            class="px-4 py-2 rounded-lg text-white bg-purple-800 hover:bg-purple-700 transition">Login</button>
+                    </a>
+                    <a href="https://filetranfer.tech/signup">
+                        <button class="px-4 py-2 rounded-lg text-purple-900 bg-white hover:bg-gray-200 transition">Sign
+                            Up</button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main content area (keeps footer from overlapping) -->
+    <main class="flex-grow pt-24 pb-28 px-4">
+        <div class="flex justify-center">
+            <!-- form-card gets the border and hover highlight -->
+            <div class="form-card">
+                <h2 class="text-center text-3xl font-bold text-amber-100 mb-6">Filespire Mailer</h2>
+
+                <form action="/sendemail" method="POST" enctype="multipart/form-data" class="space-y-6">
+                    <div>
+                        <label class="mb-2 block text-sm text-purple-300">Recipient Email</label>
+                        <input class="form-control" type="email" name="to" required placeholder="example@domain.com" />
+                    </div>
+
+                    <div>
+                        <label class="mb-2 block text-sm text-purple-300">Subject</label>
+                        <input class="form-control" type="text" name="subject" placeholder="Subject" />
+                    </div>
+
+                    <div>
+                        <label class="mb-2 block text-sm text-purple-300">Message Body</label>
+                        <textarea class="form-control" name="body" rows="6"
+                            placeholder="Write your message..."></textarea>
+                    </div>
+
+                    <div>
+                        <label class="mb-2 block text-sm text-purple-300">Attach File(s):</label>
+                        <input class="form-control" type="file" name="images" multiple />
+                    </div>
+
+                    <div>
+                        <button type="submit" class="btn-primary">Send</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-black/50 backdrop-blur-md text-center text-purple-200 py-4">
         <p>© 2025 Filespire. All rights reserved.</p>
     </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
-        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
-        crossorigin="anonymous"></script>
 </body>
 
 </html>
