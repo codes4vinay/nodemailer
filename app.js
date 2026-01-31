@@ -1,82 +1,91 @@
-const nodemailer = require('nodemailer');
-const multer = require('multer');
-const fs = require('fs');
-const bodyParser = require('body-parser');
 const express = require('express');
-const axios = require("axios");
+const bodyParser = require('body-parser');
+const multer = require('multer');
+const nodemailer = require('nodemailer');
+const fs = require('fs');
+const path = require('path');
 
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(express.static('public'));
 
-const Storage = multer.diskStorage({
-    destination: function (req, file, callback) {
-        callback(null, './images');
+/* ================= MULTER CONFIG ================= */
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, './images'); // folder already exists
     },
-    filename: function (req, file, callback) {
-        callback(null, file.fieldname + "_" + Date.now() + "_" + file.originalname);
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + "_" + file.originalname);
     }
 });
 
-// Use `array` instead of `single` for multiple files
-const upload = multer({ storage: Storage }).array('images', 10); // Limit to 10 files at a time
+const upload = multer({ storage }).single('image'); // ONLY ONE FILE
 
-app.use(express.static('public'));
+/* ================= ROUTES ================= */
 
 app.get('/', (req, res) => {
-    res.sendFile('/index.html');
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.post('/sendemail', (req, res) => {
     upload(req, res, function (err) {
         if (err) {
-            return res.end("Error uploading files.");
+            return res.status(500).send("File upload failed");
         }
 
         const { to, subject, body } = req.body;
-        const attachments = req.files.map(file => ({ path: file.path }));
+
+        if (!to || !subject || !body || !req.file) {
+            return res.status(400).send("All fields and one image are required");
+        }
+
+        const filePath = req.file.path;
 
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
                 user: 'filespire@gmail.com',
-                pass: 'qjzr moma kzxt iohy'
+                pass: 'qjzr moma kzxt iohy' // Gmail App Password
             }
         });
 
         const mailOptions = {
             from: 'filespire@gmail.com',
-            to: to,
-            subject: subject,
+            to,
+            subject,
             text: body,
-            attachments: attachments
+            attachments: [
+                { path: filePath }
+            ]
         };
 
-        transporter.sendMail(mailOptions, function (err, info) {
+        transporter.sendMail(mailOptions, (err, info) => {
             if (err) {
                 console.log(err);
-                return res.status(500).send("Failed to send email.");
-            } else {
-                console.log("Email Sent: " + info.response);
-
-                // Delete all uploaded files
-                attachments.forEach(attachment => {
-                    fs.unlink(attachment.path, function (err) {
-                        if (err) {
-                            console.log("Failed to delete file:", attachment.path);
-                        } else {
-                            console.log(`Deleted file: ${attachment.path}`);
-                        }
-                    });
-                });
-
-                return res.redirect('/result.html');
+                return res.status(500).send("Email sending failed");
             }
+
+            // DELETE FILE AFTER SUCCESS
+            fs.unlink(filePath, (err) => {
+                if (err) {
+                    console.log("File delete failed:", err);
+                } else {
+                    console.log("File deleted:", filePath);
+                }
+            });
+
+            console.log("Email sent:", info.response);
+            res.redirect('/result.html');
         });
     });
 });
+
+/* ================= SERVER ================= */
+
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-    console.log("App started on port 8080");
+    console.log(`Server running on port ${PORT}`);
 });
