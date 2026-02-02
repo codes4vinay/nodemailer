@@ -7,22 +7,24 @@ const path = require('path');
 
 const app = express();
 
+/* ================= MIDDLEWARE ================= */
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
-/* ================= MULTER CONFIG ================= */
+/* ================= MULTER (ONE FILE, OPTIONAL) ================= */
 
 const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, './images'); // folder already exists
+    destination: (req, file, cb) => {
+        cb(null, './images');
     },
-    filename: function (req, file, cb) {
+    filename: (req, file, cb) => {
         cb(null, Date.now() + "_" + file.originalname);
     }
 });
 
-const upload = multer({ storage }).single('image'); // ONLY ONE FILE
+const upload = multer({ storage }).single('image');
 
 /* ================= ROUTES ================= */
 
@@ -31,55 +33,51 @@ app.get('/', (req, res) => {
 });
 
 app.post('/sendemail', (req, res) => {
-    upload(req, res, function (err) {
+    upload(req, res, async (err) => {
         if (err) {
             return res.status(500).send("File upload failed");
         }
 
         const { to, subject, body } = req.body;
 
-        if (!to || !subject || !body || !req.file) {
-            return res.status(400).send("All fields and one image are required");
+        // ONLY EMAIL REQUIRED
+        if (!to) {
+            return res.status(400).send("Recipient email is required");
         }
-
-        const filePath = req.file.path;
 
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
-                user: 'filespire@gmail.com',
-                pass: 'qjzr moma kzxt iohy' // Gmail App Password
+                user: process.env.MAIL_USER || 'filespire@gmail.com',
+                pass: process.env.MAIL_PASS || 'YOUR_GMAIL_APP_PASSWORD'
             }
         });
 
         const mailOptions = {
             from: 'filespire@gmail.com',
             to,
-            subject,
-            text: body,
-            attachments: [
-                { path: filePath }
-            ]
+            subject: subject || 'Filespire Mail',
+            text: body || '',
+            attachments: []
         };
 
-        transporter.sendMail(mailOptions, (err, info) => {
-            if (err) {
-                console.log(err);
-                return res.status(500).send("Email sending failed");
+        if (req.file) {
+            mailOptions.attachments.push({ path: req.file.path });
+        }
+
+        try {
+            await transporter.sendMail(mailOptions);
+
+            // delete uploaded file after sending
+            if (req.file) {
+                fs.unlink(req.file.path, () => {});
             }
 
-            // DELETE FILE AFTER SUCCESS
-            fs.unlink(filePath, (err) => {
-                if (err) {
-                    console.log("File delete failed:", err);
-                } else {
-                    console.log("File deleted:", filePath);
-                }
-            });
-
-            console.log("Email sent:", info.response);
-            res.redirect('/result.html');
-        });
+            res.send("Email sent successfully");
+        } catch (error) {
+            console.error(error);
+            res.status(500).send("Email sending failed");
+        }
     });
 });
 
