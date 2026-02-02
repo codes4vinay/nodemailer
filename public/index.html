@@ -22,13 +22,7 @@
             border-radius: 1rem;
             max-width: 720px;
             border: 2px solid var(--border-default);
-            transition: 0.25s ease;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
-        }
-
-        .form-card:hover {
-            border-color: var(--accent);
-            transform: translateY(-3px);
         }
 
         .form-control {
@@ -38,11 +32,6 @@
             background: rgba(0, 0, 0, 0.34);
             color: #e9d8ff;
             border: 2px solid var(--input-border);
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--accent);
         }
 
         .btn-primary {
@@ -60,7 +49,7 @@
 
     <div class="absolute inset-0 -z-10 [background:radial-gradient(125%_125%_at_50%_10%,#000_40%,#63e_100%)]"></div>
 
-    <!-- Navbar -->
+    <!-- NAVBAR (UNCHANGED) -->
     <nav class="w-full bg-black/50 backdrop-blur-md fixed top-0 z-50">
         <div class="mx-auto px-4 h-16 flex justify-between items-center">
             <div class="text-2xl font-bold">
@@ -84,20 +73,28 @@
         </div>
     </nav>
 
+    <!-- MAIN -->
     <main class="flex-grow pt-24 pb-28 px-4 flex justify-center">
         <div class="form-card w-full">
             <h2 class="text-center text-3xl font-bold mb-6">Filespire Mailer</h2>
 
             <form action="/sendemail" method="POST" enctype="multipart/form-data" class="space-y-6">
                 <input class="form-control" type="email" name="to" placeholder="Recipient Email" required />
-                <input class="form-control" type="text" name="subject" placeholder="Subject" />
-                <textarea class="form-control" name="body" rows="6" placeholder="Message..."></textarea>
-                <input class="form-control" type="file" name="images" multiple />
+
+                <input class="form-control" type="text" name="subject" placeholder="Subject (optional)" />
+
+                <textarea class="form-control" name="body" rows="6"
+                    placeholder="Message (optional)"></textarea>
+
+                <!-- ONE FILE ONLY (OPTIONAL) -->
+                <input class="form-control" type="file" name="image" />
+
                 <button class="btn-primary" type="submit">Send</button>
             </form>
         </div>
     </main>
 
+    <!-- FOOTER (UNCHANGED) -->
     <footer class="bg-black/50 text-center py-4">
         © 2026 Filespire. All rights reserved.
     </footer>
